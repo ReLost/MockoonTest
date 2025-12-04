@@ -20,6 +20,7 @@ It provides a complete workflow for handling web requests, parsing incoming data
   - [Handling a New URL Endpoint](#handling-a-new-url-endpoint)
 -  [Text-to-Speech (TTS)](#text-to-speech-tts)
 -  [Speech-to-Text (STT)](#speech-to-text-stt)
+-  [Known Issues](#known-issues)
 -  [Roadmap](#roadmap)
 ---
 
@@ -224,6 +225,12 @@ This project includes **Speech-to-Text functionality**, allowing user speech to 
 - Recognized spoken input is displayed in the **ConversationUI input field**, ready to be edited or sent.  
 - Fully integrated with ConversationUI, following the same workflow as Text-to-Speech.
 - Recording can be started and stopped by pressing [`~] button
+
+---
+
+## Known Issues
+
+- **Text-to-Speech has problem with very long responses** - currently workaround -> skip reading the problematic issue and reset the model to work correctly with the next responses
 
 ---
 
