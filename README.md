@@ -19,6 +19,7 @@ It provides a complete workflow for handling web requests, parsing incoming data
   - [Adding a New Character Animation](#adding-a-new-character-animation)
   - [Handling a New URL Endpoint](#handling-a-new-url-endpoint)
 -  [Text-to-Speech (TTS)](#text-to-speech-tts)
+-  [Speech-to-Text (STT)](#speech-to-text-stt)
 -  [Roadmap](#roadmap)
 ---
 
@@ -92,8 +93,9 @@ Responsible for the chat-related UI:
 - Ability to send messages via keyboard shortcut  
 - Easily extendable to support additional input devices, **including new inputs from other external devices**  
 - **Device input can be configured to send messages either to Ollama or to the local host bot**, allowing flexible routing of user input.
-- Optional **Text-to-Speech support**, allowing received responses to be spoken aloud
-<img width="842" height="416" alt="Zrzut ekranu 2025-12-04 050410" src="https://github.com/user-attachments/assets/f4163f41-2fe8-4be1-83e4-5dc7c2d34885" />
+- **Text-to-Speech support**, allowing received responses to be spoken aloud
+- **Speech-to-Text support*, you can use your microphone to enter message to input field
+<img width="838" height="368" alt="Zrzut ekranu 2025-12-04 071030" src="https://github.com/user-attachments/assets/ed3d10e8-27de-4d60-948e-d7e08849543a" />
 
 ### `CharacterUI`
 
@@ -212,10 +214,20 @@ This project includes **Text-to-Speech functionality** for reading aloud receive
 
 ---
 
+## Speech-to-Text (STT)
+
+This project includes **Speech-to-Text functionality**, allowing user speech to be recognized and converted into text.  
+**ENGLISH ONLY**
+
+- The implementation is based on the [Whisper.Unity](https://github.com/Macoron/whisper.unity) solution.  
+- Recognized spoken input is displayed in the **ConversationUI input field**, ready to be edited or sent.  
+- Fully integrated with ConversationUI, following the same workflow as Text-to-Speech.
+
+---
+
 ## Roadmap
 
 We plan to introduce the following features in future versions of the project:
 
-- **Speech-to-Text (STT)** – ability to recognize user speech and send it as text to the system.  
 - **Ollama model selection** – allowing the user to choose the AI model when sending prompts, providing more flexibility in generating responses.
-
+- **Add more languages to Speech-to-Text feature** - currently we suuport only english language, in the future this limitation should be solved
