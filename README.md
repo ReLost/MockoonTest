@@ -15,7 +15,7 @@ It provides a complete workflow for handling web requests, parsing incoming data
 - [Data Structures](#data-structures)
   - [WebRequest Data](#webrequest-data)
   - [Character Data](#character-data)
-- [Adding New Features](#adding-new-features)
+- [Adding New Content](#adding-new-content)
   - [Adding a New Character Animation](#adding-a-new-character-animation)
   - [Handling a New URL Endpoint](#handling-a-new-url-endpoint)
 -  [Text-to-Speech (TTS)](#text-to-speech-tts)
@@ -165,7 +165,7 @@ These structures manage character-related information and animation states.
 
 ---
 
-## Adding New Features
+## Adding New Content
 
 This section explains how to extend the project by adding new character animations and handling new URL endpoints.
 
@@ -210,7 +210,8 @@ This project includes **Text-to-Speech functionality** for reading aloud receive
 
 - The TTS implementation is based on the model: [Jets Text-to-Speech](https://huggingface.co/unity/inference-engine-jets-text-to-speech) from Hugging Face.  
 - It has been integrated into the project with minor modifications to fit the existing Unity workflow and UI.  
-- TTS can be enabled via the **ConversationUI**, allowing messages received from either Ollama or the local host bot to be spoken aloud.  
+- TTS can be enabled via the **ConversationUI**, allowing messages received from either Ollama or the local host bot to be spoken aloud.
+- Speaking can be stopped by pressing [Escape]
 
 ---
 
@@ -222,6 +223,7 @@ This project includes **Speech-to-Text functionality**, allowing user speech to 
 - The implementation is based on the [Whisper.Unity](https://github.com/Macoron/whisper.unity) solution.  
 - Recognized spoken input is displayed in the **ConversationUI input field**, ready to be edited or sent.  
 - Fully integrated with ConversationUI, following the same workflow as Text-to-Speech.
+- Recording can be started and stopped by pressing [`~] button
 
 ---
 
