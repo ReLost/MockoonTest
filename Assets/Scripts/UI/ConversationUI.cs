@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Text;
 using Immersion.MetaCouch.Networking;
@@ -11,8 +12,9 @@ namespace Immersion.MetaCouch.UI
 {
     public class ConversationUI : MonoBehaviour
     {
-        [Header("External References")] 
-        [SerializeField] private NetworkHandler networkHandler;
+        [Header("External References")] [SerializeField]
+        private NetworkHandler networkHandler;
+
         [SerializeField] private NetworkHandler ollamaNetworkHandler;
 
         [SerializeField] private DataParser dataParser;
@@ -24,9 +26,16 @@ namespace Immersion.MetaCouch.UI
         [SerializeField] private Button sendMessageButton;
         [SerializeField] private Button sendMessageToOllamaButton;
 
+        [SerializeField, Space(5)] private Toggle textToSpeechToggle;
+        [SerializeField] private Button stopSpeakingButton;
+
+        [Header("Text To Speech")] [SerializeField]
+        private TextToSpeechController textToSpeechController;
+
         [Header("Input")] 
         [SerializeField] private InputAction sendMessageInput;
         [SerializeField] private bool inputSendMessageToOllama = true;
+        [SerializeField, Space(5)] private InputAction stopSpeakingInput;
 
         private readonly StringBuilder currentHistory = new();
 
@@ -34,6 +43,8 @@ namespace Immersion.MetaCouch.UI
         private Coroutine waitingCoroutine;
         private bool isWaitingForResponse;
         private WaitForSeconds delayBetweenDots;
+
+        private Coroutine speakingCoroutine;
 
         private bool askedOllama;
 
@@ -49,8 +60,7 @@ namespace Immersion.MetaCouch.UI
             sendMessageToOllamaButton.onClick.AddListener(() => SendRequest(true));
             HandleSendButtonBehaviour();
 
-            sendMessageInput.Enable();
-            sendMessageInput.performed += SendRequestOnButtonAction;
+            AttachInputs();
 
             messageInputField.ActivateInputField();
         }
@@ -61,16 +71,20 @@ namespace Immersion.MetaCouch.UI
             networkHandler.OnResponseReceivedSuccess += UpdateMessage;
             networkHandler.OnResponseReceivedFailure += OnResponseError;
             networkHandler.OnResponseTimeout += OnResponseTimeout;
-            
+
             ollamaNetworkHandler.OnResponseWaiting += ShowWaitingForResponseIndicator;
             ollamaNetworkHandler.OnResponseReceivedSuccess += UpdateMessage;
             ollamaNetworkHandler.OnResponseReceivedFailure += OnResponseError;
             ollamaNetworkHandler.OnResponseTimeout += OnResponseTimeout;
         }
 
-        private void SendRequestOnButtonAction(InputAction.CallbackContext obj)
+        private void AttachInputs()
         {
-            SendRequest(inputSendMessageToOllama);
+            sendMessageInput.Enable();
+            sendMessageInput.performed += SendRequestOnButtonAction;
+
+            stopSpeakingInput.Enable();
+            stopSpeakingInput.performed += StopSpeakingOnButtonAction;
         }
 
         private void OnDestroy()
@@ -82,6 +96,8 @@ namespace Immersion.MetaCouch.UI
 
             sendMessageInput.Disable();
             sendMessageInput.performed -= SendRequestOnButtonAction;
+            stopSpeakingInput.Disable();
+            stopSpeakingInput.performed -= StopSpeakingOnButtonAction;
         }
 
         private void SendRequest(bool askOllama)
@@ -123,19 +139,50 @@ namespace Immersion.MetaCouch.UI
         private void UpdateMessage(string responseMessage)
         {
             var message = GetParsedMessage(responseMessage);
-            AddToConversation(message);
+            var prefix = askedOllama ? "<color=purple>[OLLAMA]</color>" : "<color=blue>[BOT]</color>";
+            AddToConversation($"{prefix} {message}");
+            TryReadResponse(message);
+        }
+
+        private void TryReadResponse(string message)
+        {
+            if (textToSpeechToggle.isOn)
+            {
+                try
+                {
+                    textToSpeechController.TextToSpeech(message, out var audioSize);
+                    stopSpeakingButton.gameObject.SetActive(true);
+
+                    if (speakingCoroutine != null)
+                        StopCoroutine(speakingCoroutine);
+
+                    speakingCoroutine = StartCoroutine(DisableStopSpeakingButtonAfterSpeech(audioSize));
+                }
+                catch (Exception ex)
+                {
+                    //Debug.LogError($"Error with Reading text: {ex.Message}");
+                    textToSpeechController.ResetModel();
+                }
+            }
+        }
+
+        private IEnumerator DisableStopSpeakingButtonAfterSpeech(float audioSize)
+        {
+            yield return new WaitForSeconds(audioSize);
+
+            stopSpeakingButton.gameObject.SetActive(false);
         }
 
         private string GetParsedMessage(string responseMessage)
         {
             if (askedOllama)
             {
-                return $"<color=purple>[OLLAMA]</color> {dataParser.GetOllamaResponse(responseMessage)}";;
+                return dataParser.GetOllamaResponse(responseMessage);
             }
 
             var data = dataParser.GetCharacterData(responseMessage, out var success);
             return success
-                ? $"<color=blue>[BOT]</color> Hi, I'm {data.name}, my mood today, in scale 0-6, is {data.mood}"
+                ? $"Hi, I'm {data.name}, my mood today, in scale 0-6, is {data.mood}"
                 : "<color=red>Something went wrong with CharacterData</color>";
         }
 
@@ -168,6 +215,25 @@ namespace Immersion.MetaCouch.UI
         {
             sendMessageButton.interactable = messageInputField.text.Length > 0;
             sendMessageToOllamaButton.interactable = messageInputField.text.Length > 0;
+        }
+
+        public void StopSpeaking()
+        {
+            if (speakingCoroutine != null)
+                StopCoroutine(speakingCoroutine);
+
+            textToSpeechController.StopSpeaking();
+            stopSpeakingButton.gameObject.SetActive(false);
+        }
+        
+        private void SendRequestOnButtonAction(InputAction.CallbackContext obj)
+        {
+            SendRequest(inputSendMessageToOllama);
+        }
+
+        private void StopSpeakingOnButtonAction(InputAction.CallbackContext obj)
+        {
+            StopSpeaking();
         }
     }
 }
