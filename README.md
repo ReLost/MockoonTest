@@ -268,7 +268,7 @@ https://github.com/user-attachments/assets/8c3d2605-c098-433b-a9d0-7d8bf9296fa3
 We plan to introduce the following features in future versions of the project:
 
 - **Ollama model selection** – allowing the user to choose the AI model when sending prompts, providing more flexibility in generating responses.
-- **Add more languages to Speech-to-Text feature** - currently we suuport only english language, in the future this limitation should be solved.
+- **Add more languages to Speech-to-Text feature** - currently we suport only english language, in the future this limitation should be solved.
 - **Typewriter effect on responses** - to add more immersion (hehe) to the conversation and make it feel more believable
 - **Streaming Speech during recording** - text appearing partially during the recording instead of at the end.
-- **Move AI Model for TTS to Streaming Assets** - to allow easily improving the quality of TTL without creating anew build
+- **Move AI Model for TTS to Streaming Assets** - to allow easily improving the quality of TTS without creating anew build
